@@ -41,7 +41,7 @@ function doLogin()
 	}
 
 	// Get User
-	$stmt = $conn->prepare("SELECT user_id, password 
+	$stmt = $conn->prepare("SELECT t_id, user_id, first_name, password 
 							FROM bs_user 
 							WHERE email = :email 
 							AND is_deleted != '1'
@@ -59,6 +59,16 @@ function doLogin()
 
 	// Verify password
 	if (!password_verify($password, $user['password'])) {
+		$userFirstName = $user['first_name'];
+
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+		$device = getDeviceType($userAgent);
+		$os = getOS($userAgent);
+		$browser = getBrowser($userAgent);
+
+		include 'login-attempt-email.php';
+
 		return [
 			"field" => "password",
 			"emailAddress" => $emailAddress,
@@ -68,6 +78,7 @@ function doLogin()
 
 	// Login success
 	$_SESSION['user_id'] = $user['user_id'];
+	$_SESSION['t_id'] = $user['t_id'];
 
 	$update = $conn->prepare("UPDATE bs_user 
 								SET last_login = :last_login 
@@ -78,6 +89,107 @@ function doLogin()
 	]);
 
 	header("Location: " . WEB_ROOT);
+	exit;
+}
+
+function generateVerificationCode($length = 6)
+{
+	$characters = '0123456789';
+	$code = '';
+	for ($i = 0; $i < $length; $i++) {
+		$code .= $characters[rand(0, strlen($characters) - 1)];
+	}
+	return $code;
+}
+
+function doRegister()
+{
+	include SRV_ROOT . 'global-library/database.php';
+
+	$firstName = trim($_POST['firstName'] ?? '');
+	$lastName = trim($_POST['lastName'] ?? '');
+	$email = trim($_POST['email'] ?? '');
+	$password = $_POST['password'] ?? '';
+	$confirmPassword = $_POST['confirmPassword'] ?? '';
+
+	$verifyCode = generateVerificationCode();
+	$verifyCodeHash = password_hash($verifyCode, PASSWORD_DEFAULT);
+
+	// Check Tenant Email
+	$stmt = $conn->prepare("SELECT u.first_name, u.email
+							FROM tenant t
+							JOIN bs_user u ON t.user_id = u.user_id 
+							WHERE u.email = :email 
+							AND u.is_deleted != '1'");
+	$stmt->execute([':email' => $email]);
+	$checkStmt = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	if ($checkStmt) {
+		$stmtFirstName = $checkStmt['first_name'];
+
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+		$device = getDeviceType($userAgent);
+		$os = getOS($userAgent);
+		$browser = getBrowser($userAgent);
+
+		include 'registration-attempt-alert-email.php';
+
+		return [
+			"firstName" => $firstName,
+			"lastName" => $lastName,
+			"email" => $email,
+			"message" => "Email address already exists, try logging in.",
+			"field" => "email"
+		];
+	}
+
+	if ($password !== $confirmPassword) {
+		return [
+			"firstName" => $firstName,
+			"lastName" => $lastName,
+			"email" => $email,
+			"message" => "Passwords do not match",
+			"field" => "confirmPassword"
+		];
+	}
+
+	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+	// Insert User Data
+	$sql = $conn->prepare("INSERT INTO bs_user (first_name, last_name, email, password, verification_code, date_added, is_deleted)
+										VALUES (:first_name, :last_name, :email, :password, :verification_code, :date_added, '0')");
+	$sql->bindParam(':first_name', $firstName, PDO::PARAM_STR);
+	$sql->bindParam(':last_name', $lastName, PDO::PARAM_STR);
+	$sql->bindParam(':email', $email, PDO::PARAM_STR);
+	$sql->bindParam(':password', $hashed_password, PDO::PARAM_STR);
+	$sql->bindParam(':verification_code', $verifyCodeHash, PDO::PARAM_STR);
+	$sql->bindParam(':date_added', $today_date1, PDO::PARAM_STR);
+	$sql->execute();
+
+	$userId = $conn->lastInsertId();
+	$uid = md5($userId);
+
+	// Insert Tenant Data
+	$itd = $conn->prepare("INSERT INTO tenant (s_id, user_id) VALUES ('1', :user_id)");
+	$itd->bindParam(':user_id', $userId, PDO::PARAM_INT);
+	$itd->execute();
+
+	$t_id = $conn->lastInsertId();
+
+	$update = $conn->prepare("UPDATE bs_user 
+								SET t_id = :t_id, added_by = :added_by, last_login = :last_login, uid = :uid
+								WHERE user_id = :user_id");
+	$update->bindParam(':t_id', $t_id, PDO::PARAM_INT);
+	$update->bindParam(':added_by', $userId, PDO::PARAM_STR);
+	$update->bindParam(':last_login', $today_date1, PDO::PARAM_STR);
+	$update->bindParam(':uid', $uid, PDO::PARAM_STR);
+	$update->bindParam(':user_id', $userId, PDO::PARAM_INT);
+	$update->execute();
+
+	include 'send-verification-code-email.php';
+
+	header("Location: " . WEB_ROOT . 'login?promptStatus=success&promptMessage=' . urlencode('Verification code sent to ' . $email . '. Please check your email to complete the registration process.'));
 	exit;
 }
 
@@ -100,5 +212,54 @@ function doLogout()
 
 	header('Location:' . WEB_ROOT . '');
 	exit;
+}
+
+function getDeviceType($userAgent)
+{
+	if (preg_match('/mobile/i', $userAgent)) {
+		return 'Mobile';
+	} elseif (preg_match('/tablet|ipad/i', $userAgent)) {
+		return 'Tablet';
+	} else {
+		return 'Desktop';
+	}
+}
+
+function getOS($userAgent)
+{
+	$osArray = [
+		'Windows' => 'Windows NT',
+		'Mac OS' => 'Macintosh',
+		'iOS' => 'iPhone|iPad',
+		'Android' => 'Android',
+		'Linux' => 'Linux'
+	];
+
+	foreach ($osArray as $os => $value) {
+		if (preg_match("/$value/i", $userAgent)) {
+			return $os;
+		}
+	}
+
+	return "Unknown OS";
+}
+
+function getBrowser($userAgent)
+{
+	$browsers = [
+		'Chrome' => 'Chrome',
+		'Firefox' => 'Firefox',
+		'Safari' => 'Safari',
+		'Edge' => 'Edg',
+		'Opera' => 'Opera'
+	];
+
+	foreach ($browsers as $browser => $value) {
+		if (preg_match("/$value/i", $userAgent)) {
+			return $browser;
+		}
+	}
+
+	return "Unknown Browser";
 }
 ?>

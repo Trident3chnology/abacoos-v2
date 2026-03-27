@@ -1,5 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="title" content="Abacoos - Sign in">
+<meta name="title" content="Abacoos">
 <meta name="author" content="Abacoos">
 
 <link rel="canonical" href="https://abacoos.com/" />
@@ -18,5 +18,8 @@
 
 <!-- Pixel CSS -->
 <link type="text/css" href="<?= WEB_ROOT; ?>css/neumorphism.css" rel="stylesheet">
+<link type="text/css" href="<?= WEB_ROOT; ?>css/style.css" rel="stylesheet">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

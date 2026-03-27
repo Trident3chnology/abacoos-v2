@@ -5,7 +5,6 @@ if (!defined('WEB_ROOT')) {
 }
 
 $self = WEB_ROOT . 'index.php';
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,7 +24,13 @@ $self = WEB_ROOT . 'index.php';
     <?php include($_SERVER["DOCUMENT_ROOT"] . '/' . WEB_ROOT . '/include/header.php'); ?>
 
     <main>
-        <?php require_once $content; ?>
+        <?php
+        if ($user_data['is_verified'] == '1'):
+            require_once $content;
+        else:
+            include 'verification.php';
+        endif;
+        ?>
     </main>
 
     <?php include($_SERVER["DOCUMENT_ROOT"] . '/' . WEB_ROOT . '/include/footer.php'); ?>

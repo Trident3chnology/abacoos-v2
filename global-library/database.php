@@ -42,6 +42,7 @@ try {
 
 // Session User
 $userId = $_SESSION['user_id'] ?? null;
+$tenantId = $_SESSION['t_id'] ?? null;
 $user_data = null;
 
 if ($userId) {
