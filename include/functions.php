@@ -48,6 +48,7 @@ function doLogin()
 							LIMIT 1");
 	$stmt->execute([':email' => $emailAddress]);
 	$user = $stmt->fetch(PDO::FETCH_ASSOC);
+	$stmt = null;
 
 	if (!$user) {
 		return [
@@ -75,6 +76,10 @@ function doLogin()
 			"message" => "Invalid password, please try again."
 		];
 	}
+
+	// Convert existing t_id string to array
+	// $tId = !empty($user['t_id']) ? explode(',', $user['t_id']) : [];
+	// $tId[0];
 
 	// Login success
 	$_SESSION['user_id'] = $user['user_id'];
@@ -115,14 +120,14 @@ function doRegister()
 	$verifyCode = generateVerificationCode();
 	$verifyCodeHash = password_hash($verifyCode, PASSWORD_DEFAULT);
 
-	// Check Tenant Email
-	$stmt = $conn->prepare("SELECT u.first_name, u.email
-							FROM tenant t
-							JOIN bs_user u ON t.user_id = u.user_id 
-							WHERE u.email = :email 
-							AND u.is_deleted != '1'");
+	// Check Email
+	$stmt = $conn->prepare("SELECT first_name, email
+							FROM bs_user
+							WHERE email = :email 
+							AND is_deleted != '1'");
 	$stmt->execute([':email' => $email]);
 	$checkStmt = $stmt->fetch(PDO::FETCH_ASSOC);
+	$stmt = null;
 
 	if ($checkStmt) {
 		$stmtFirstName = $checkStmt['first_name'];
@@ -157,8 +162,8 @@ function doRegister()
 	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
 	// Insert User Data
-	$sql = $conn->prepare("INSERT INTO bs_user (first_name, last_name, email, password, verification_code, date_added, is_deleted)
-										VALUES (:first_name, :last_name, :email, :password, :verification_code, :date_added, '0')");
+	$sql = $conn->prepare("INSERT INTO bs_user (first_name, last_name, email, password, verification_code, is_completed, date_added, is_deleted)
+										VALUES (:first_name, :last_name, :email, :password, :verification_code, '1', :date_added, '0')");
 	$sql->bindParam(':first_name', $firstName, PDO::PARAM_STR);
 	$sql->bindParam(':last_name', $lastName, PDO::PARAM_STR);
 	$sql->bindParam(':email', $email, PDO::PARAM_STR);
@@ -171,7 +176,8 @@ function doRegister()
 	$uid = md5($userId);
 
 	// Insert Tenant Data
-	$itd = $conn->prepare("INSERT INTO tenant (s_id, user_id) VALUES ('1', :user_id)");
+	$itd = $conn->prepare("INSERT INTO tenant (user_id, s_id, account, sub_account, transfer, check_book, user)
+										VALUES (:user_id, '1', '1', '1', '0', '0', '1')");
 	$itd->bindParam(':user_id', $userId, PDO::PARAM_INT);
 	$itd->execute();
 
@@ -180,11 +186,56 @@ function doRegister()
 	$update = $conn->prepare("UPDATE bs_user 
 								SET t_id = :t_id, added_by = :added_by, last_login = :last_login, uid = :uid
 								WHERE user_id = :user_id");
-	$update->bindParam(':t_id', $t_id, PDO::PARAM_INT);
+	$update->bindParam(':t_id', $t_id, PDO::PARAM_INT); // Default tenant ID
 	$update->bindParam(':added_by', $userId, PDO::PARAM_STR);
 	$update->bindParam(':last_login', $today_date1, PDO::PARAM_STR);
 	$update->bindParam(':uid', $uid, PDO::PARAM_STR);
 	$update->bindParam(':user_id', $userId, PDO::PARAM_INT);
+	$update->execute();
+
+	include 'send-verification-code-email.php';
+
+	header("Location: " . WEB_ROOT . 'login?promptStatus=success&promptMessage=' . urlencode('Verification code sent to ' . $email . '. Please check your email to complete the registration process.'));
+	exit;
+}
+
+function doCompleteRegistration()
+{
+	include SRV_ROOT . 'global-library/database.php';
+
+	$uid = trim($_POST['uid'] ?? '');
+	$firstName = trim($_POST['firstName'] ?? '');
+	$lastName = trim($_POST['lastName'] ?? '');
+	$email = trim($_POST['email'] ?? '');
+	$password = $_POST['password'] ?? '';
+	$confirmPassword = $_POST['confirmPassword'] ?? '';
+
+	$verifyCode = generateVerificationCode();
+	$verifyCodeHash = password_hash($verifyCode, PASSWORD_DEFAULT);
+
+	if ($password !== $confirmPassword) {
+		return [
+			"firstName" => $firstName,
+			"lastName" => $lastName,
+			"email" => $email,
+			"message" => "Passwords do not match",
+			"field" => "confirmPassword"
+		];
+	}
+
+	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+	// Update User Data
+	$update = $conn->prepare("UPDATE bs_user 
+								SET first_name = :first_name, last_name = :last_name, password = :password,
+									verification_code = :verification_code, is_completed = '1', last_login = :last_login
+								WHERE uid = :uid");
+	$update->bindParam(':first_name', $firstName, PDO::PARAM_STR);
+	$update->bindParam(':last_name', $lastName, PDO::PARAM_STR);
+	$update->bindParam(':password', $hashed_password, PDO::PARAM_STR);
+	$update->bindParam(':verification_code', $verifyCodeHash, PDO::PARAM_STR);
+	$update->bindParam(':last_login', $today_date1, PDO::PARAM_STR);
+	$update->bindParam(':uid', $uid, PDO::PARAM_STR);
 	$update->execute();
 
 	include 'send-verification-code-email.php';

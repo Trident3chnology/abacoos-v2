@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #e0e5ec;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 1.55rem !important;
+            background: #e0e5ec;
+            box-shadow: 8px 8px 16px #b8bec7,
+                -8px -8px 16px #ffffff;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            background: #e0e5ec;
+            box-shadow: inset 4px 4px 8px #b8bec7,
+                inset -4px -4px 8px #ffffff;
+            color: #6c757d;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        p {
+            color: #555;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+
+        .card {
+            margin: 25px 0;
+            padding: 15px;
+            border-radius: 15px;
+            background: #e0e5ec;
+            box-shadow: inset 6px 6px 10px #b8bec7,
+                inset -6px -6px 10px #ffffff;
+            text-align: left;
+        }
+
+        .row {
+            display: flex;
+            /* justify-content: space-between; */
+            font-size: 13px;
+            margin: 6px 0;
+            color: #444;
+        }
+
+        .row span:first-child {
+            color: #888;
+        }
+
+        .cta {
+            margin-top: 15px;
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #333;
+            background: #e0e5ec;
+            box-shadow: 5px 5px 10px #b8bec7,
+                -5px -5px 10px #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .cta:hover {
+            box-shadow: inset 5px 5px 10px #b8bec7,
+                inset -5px -5px 10px #ffffff;
+        }
+
+        .secondary {
+            margin-top: 15px;
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #636e72;
+            background: #e0e5ec;
+            box-shadow: 5px 5px 10px #b8bec7,
+                -5px -5px 10px #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .secondary:hover {
+            box-shadow: inset 5px 5px 10px #b8bec7,
+                inset -5px -5px 10px #ffffff;
+        }
+
+        .divider {
+            height: 1px;
+            margin: 20px 0;
+            background: linear-gradient(to right, transparent, #cfd6df, transparent);
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        @media screen and (max-width: 500px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .row {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <img src="https://via.placeholder.com/90" alt="Logo" class="logo">
+        <br>
+        <div class="badge">INVITATION</div>
+
+        <h1>You`re Invited</h1>
+
+        <p>Hi there,<br>
+            <strong>
+                ' . $inviter_name . '
+            </strong> has invited you to collaborate in <strong>
+                Abacoos
+            </strong>. 
+            <br>
+            This invitation will expire
+            <strong>
+                ' . $expires_at . '
+            </strong>
+            <br>
+            <br>
+            Click the button below to accept the invitation and get started!
+        </p>
+
+        <a href="#" class="cta">Open Abacoos</a>
+        <br>
+
+        <div class="divider"></div>
+
+        <p>If you weren`t expecting this invitation, you can safely ignore this email.</p>
+
+        <div class="footer">
+            &copy; 2026 Trident3chnology. All rights reserved.
+        </div>
+    </div>
+
+</body>
+
+</html>

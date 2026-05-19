@@ -18,6 +18,20 @@ if (status && status.trim() == "success") {
         },
         buttonsStyling: false
     });
+} else if (status && status.trim() == "error") {
+    Swal.fire({
+        icon: 'error', // 'success', 'error', 'warning', 'info', 'question'
+        title: 'Error',
+        text: message,
+        confirmButtonText: 'OK',
+        background: '#e0e5ec',
+        customClass: {
+            popup: 'neu-popup',
+            title: 'neu-title',
+            confirmButton: 'neu-btn'
+        },
+        buttonsStyling: false
+    });
 }
 
 // Remove query string after showing

@@ -1,17 +1,35 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("form");
-    const submitBtn = document.getElementById("submitBtn");
-    const loadingBtn = document.getElementById("loadingBtn");
 
-    form.addEventListener("submit", function () {
-        if (!form.checkValidity()) return;
+    // Handle ALL forms with class .form-submit-loader
+    document.querySelectorAll(".form-submit-loader").forEach(form => {
 
-        // Hide submit button
-        submitBtn.classList.add("d-none");
+        const submitBtn = form.querySelector(".submitBtn");
+        const loadingBtn = form.querySelector(".loadingBtn");
 
-        // Show loading button
-        loadingBtn.classList.remove("d-none");
+        if (!submitBtn || !loadingBtn) return;
+
+        form.addEventListener("submit", function (e) {
+
+            // Stop if invalid
+            if (!form.checkValidity()) return;
+
+            // Prevent double submit
+            if (form.classList.contains("is-submitting")) {
+                e.preventDefault();
+                return;
+            }
+
+            form.classList.add("is-submitting");
+
+            // Hide submit button
+            submitBtn.classList.add("d-none");
+
+            // Show loading button
+            loadingBtn.classList.remove("d-none");
+        });
+
     });
+
 });

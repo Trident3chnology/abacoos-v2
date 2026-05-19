@@ -70,7 +70,7 @@ async function verifyPin(pin) {
     pinInputs.forEach(input => input.disabled = true);
 
     try {
-        const response = await fetch('<?= WEB_ROOT; ?>include/process.php?action=verify', {
+        const response = await fetch('include/process.php?action=verify', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -39,6 +39,7 @@
                             <li><a class="dropdown-item" href="<?= WEB_ROOT; ?>transfer">Transfer</a></li>
                             <li><a class="dropdown-item" href="<?= WEB_ROOT; ?>report">Report</a></li>
                             <li><a class="dropdown-item" href="<?= WEB_ROOT; ?>user">User</a></li>
+                            <li><a class="dropdown-item" href="<?= WEB_ROOT; ?>activity-log">Activity logs</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

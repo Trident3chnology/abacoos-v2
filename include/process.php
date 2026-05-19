@@ -75,17 +75,17 @@ function verify_data()
 		$gts->execute();
 		$gts_data = $gts->fetch(PDO::FETCH_ASSOC);
 
-		$subscription = ($gts_data) ? $gts_data['s_type'] : 'No active subscription';
+		// $subscription = ($gts_data) ? $gts_data['s_type'] : 'No active subscription';
 
-		$keyword = 'Email: ' . htmlspecialchars($email, ENT_QUOTES, 'UTF-8') . ' <br />Subscription: ' . htmlspecialchars($subscription, ENT_QUOTES, 'UTF-8');
+		// $keyword = 'Email: ' . htmlspecialchars($email, ENT_QUOTES, 'UTF-8') . ' <br />Subscription: ' . htmlspecialchars($subscription, ENT_QUOTES, 'UTF-8');
 
-		$log = $conn->prepare("INSERT INTO activity_log (t_id, module, action, description, action_by, log_action_date)
-												VALUES (:t_id, 'Tenant', 'Tenant Email Verified', :description, :action_by, :log_action_date)");
-		$log->bindParam(':t_id', $tenantId, PDO::PARAM_INT);
-		$log->bindParam(':description', $keyword, PDO::PARAM_STR);
-		$log->bindParam(':action_by', $userId, PDO::PARAM_INT);
-		$log->bindParam(':log_action_date', $today_date1, PDO::PARAM_STR);
-		$log->execute();
+		// $log = $conn->prepare("INSERT INTO activity_log (t_id, module, action, description, action_by, log_action_date)
+		// 										VALUES (:t_id, 'Tenant', 'Tenant Email Verified', :description, :action_by, :log_action_date)");
+		// $log->bindParam(':t_id', $tenantId, PDO::PARAM_INT);
+		// $log->bindParam(':description', $keyword, PDO::PARAM_STR);
+		// $log->bindParam(':action_by', $userId, PDO::PARAM_INT);
+		// $log->bindParam(':log_action_date', $today_date1, PDO::PARAM_STR);
+		// $log->execute();
 
 		echo json_encode([
 			'status' => 'success',

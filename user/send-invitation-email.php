@@ -3,9 +3,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+require '../phpmailer/src/Exception.php';
+require '../phpmailer/src/PHPMailer.php';
+require '../phpmailer/src/SMTP.php';
 
 // Create a new PHPMailer object
 $mail = new PHPMailer(true);
@@ -27,7 +27,7 @@ $mail->addAddress($email);
 
 // Content
 $mail->isHTML(true);
-$mail->Subject = 'Abacoos Verification Code';
+$mail->Subject = 'Abacoos Invitation';
 $mail->Body = '
 <!DOCTYPE html>
 <html lang="en">
@@ -59,6 +59,19 @@ $mail->Body = '
             margin-bottom: 20px;
         }
 
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            background: #e0e5ec;
+            box-shadow: inset 4px 4px 8px #b8bec7,
+                inset -4px -4px 8px #ffffff;
+            color: #6c757d;
+        }
+
         h1 {
             margin: 0;
             font-size: 24px;
@@ -71,20 +84,30 @@ $mail->Body = '
             margin: 15px 0;
         }
 
-        .code-box {
+        .card {
             margin: 25px 0;
             padding: 15px;
-            font-size: 28px;
-            letter-spacing: 6px;
-            font-weight: bold;
-            color: #00b894;
             border-radius: 15px;
             background: #e0e5ec;
             box-shadow: inset 6px 6px 10px #b8bec7,
                 inset -6px -6px 10px #ffffff;
+            text-align: left;
         }
 
-        .btn {
+        .row {
+            display: flex;
+            /* justify-content: space-between; */
+            font-size: 13px;
+            margin: 6px 0;
+            color: #444;
+        }
+
+        .row span:first-child {
+            color: #888;
+        }
+
+        .cta {
+            margin-top: 15px;
             display: inline-block;
             padding: 12px 25px;
             border-radius: 30px;
@@ -97,9 +120,34 @@ $mail->Body = '
             transition: all 0.3s ease;
         }
 
-        .btn:hover {
+        .cta:hover {
             box-shadow: inset 5px 5px 10px #b8bec7,
                 inset -5px -5px 10px #ffffff;
+        }
+
+        .secondary {
+            margin-top: 15px;
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #636e72;
+            background: #e0e5ec;
+            box-shadow: 5px 5px 10px #b8bec7,
+                -5px -5px 10px #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .secondary:hover {
+            box-shadow: inset 5px 5px 10px #b8bec7,
+                inset -5px -5px 10px #ffffff;
+        }
+
+        .divider {
+            height: 1px;
+            margin: 20px 0;
+            background: linear-gradient(to right, transparent, #cfd6df, transparent);
         }
 
         .footer {
@@ -113,6 +161,11 @@ $mail->Body = '
                 margin: 20px;
                 padding: 20px;
             }
+
+            .row {
+                flex-direction: column;
+                gap: 4px;
+            }
         }
     </style>
 </head>
@@ -120,20 +173,29 @@ $mail->Body = '
 <body>
 
     <div class="container">
-        <img src="https://via.placeholder.com/80" alt="Logo" class="logo">
+        <img src="https://via.placeholder.com/90" alt="Logo" class="logo">
+        <br>
+        <div class="badge">INVITATION</div>
 
-        <h1>Verify Your Email</h1>
+        <h1>You`re Invited</h1>
 
         <p>Hi there ' . $firstName . ',<br>
-            Use the verification code below to complete your sign-up process.</p>
+            <strong>
+                ' . $inviter_name . '
+            </strong> has invited you to collaborate in <strong>
+                Abacoos
+            </strong>. 
+            <br>
+            <br>
+            Click the button below to accept the invitation and get started!
+        </p>
 
-        <div class="code-box">
-            ' . $verifyCode . '
-        </div>
+        <a href="' . $invitationUrl . '" target="_blank" class="cta">Open Abacoos</a>
+        <br>
 
-        <a href="http://127.0.0.1/abacoos-v2/" target="_blank" class="btn">Verify Now</a>
+        <div class="divider"></div>
 
-        <p>If you didn`t request this, you can safely ignore this email.</p>
+        <p>If you weren`t expecting this invitation, you can safely ignore this email.</p>
 
         <div class="footer">
             &copy; 2026 Trident3chnology. All rights reserved.
