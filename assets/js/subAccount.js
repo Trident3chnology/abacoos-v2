@@ -146,21 +146,11 @@ $(function () {
                     .then(response => response.json())
                     .then(data => {
                         if (data.status) {
-                            Swal.fire({
-                                icon: 'success', // 'success', 'error', 'warning', 'info', 'question'
-                                title: 'Deleted!',
-                                text: 'Sub-account has been deleted.',
-                                timer: 2500,
-                                showConfirmButton: false,
-                                background: '#e0e5ec',
-                                customClass: {
-                                    popup: 'neu-popup',
-                                    title: 'neu-title',
-                                    confirmButton: 'neu-btn',
-                                    cancelButton: 'neu-btn'
-                                },
-                                buttonsStyling: false
-                            });
+                            if (typeof showLottieSuccessAlert === 'function') {
+                                showLottieSuccessAlert('Deleted!', 'Sub-account has been deleted.');
+                            } else {
+                                Swal.fire('Deleted!', 'Sub-account has been deleted.', 'success');
+                            }
 
                             loadSubAccountTable(); // reload table
                         } else {

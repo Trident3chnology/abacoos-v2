@@ -98,21 +98,11 @@ $(function () {
                     .then(response => response.json())
                     .then(data => {
                         if (data.status) {
-                            Swal.fire({
-                                icon: 'success', // 'success', 'error', 'warning', 'info', 'question'
-                                title: 'Deleted!',
-                                text: 'User has been deleted.',
-                                timer: 2500,
-                                showConfirmButton: false,
-                                background: '#e0e5ec',
-                                customClass: {
-                                    popup: 'neu-popup',
-                                    title: 'neu-title',
-                                    confirmButton: 'neu-btn',
-                                    cancelButton: 'neu-btn'
-                                },
-                                buttonsStyling: false
-                            });
+                            if (typeof showLottieSuccessAlert === 'function') {
+                                showLottieSuccessAlert('Deleted!', 'User has been deleted.');
+                            } else {
+                                Swal.fire('Deleted!', 'User has been deleted.', 'success');
+                            }
 
                             loadUserTable(); // reload table
                         } else {

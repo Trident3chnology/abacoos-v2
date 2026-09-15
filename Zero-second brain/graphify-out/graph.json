@@ -1,0 +1,285 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "auth_flow",
+        "label": "Authentication & Onboarding Flow",
+        "nodes": [
+          "login",
+          "sign_up",
+          "include_functions",
+          "global_library_database"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 0.95,
+        "source_file": "System Flow.md"
+      },
+      {
+        "id": "api_controller_layer",
+        "label": "API Controller Layer",
+        "nodes": [
+          "account_process",
+          "transaction_process",
+          "sub_account_process",
+          "category_process",
+          "user_process",
+          "activity_log_process"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "API & Data Connections.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "Account API Controller",
+      "file_type": "code",
+      "source_file": "account/process.php",
+      "rationale": "Handles CRUD operations for financial accounts with tenant isolation.",
+      "community": 0,
+      "norm_label": "account api controller",
+      "id": "account_process",
+      "community_name": "Account and Transaction APIs"
+    },
+    {
+      "label": "Transaction API Controller",
+      "file_type": "code",
+      "source_file": "transaction/process.php",
+      "rationale": "Master processor for posting transactions, updating balances, and handling transfers.",
+      "community": 0,
+      "norm_label": "transaction api controller",
+      "id": "transaction_process",
+      "community_name": "Account and Transaction APIs"
+    },
+    {
+      "label": "Action-Based Routing Pattern",
+      "file_type": "concept",
+      "source_file": "API & Data Connections.md",
+      "rationale": "Architectural pattern where localized process.php scripts act as API dispatchers.",
+      "community": 0,
+      "norm_label": "action-based routing pattern",
+      "id": "action_based_routing",
+      "community_name": "Account and Transaction APIs"
+    },
+    {
+      "label": "Multi-Tenant Data Isolation",
+      "file_type": "concept",
+      "source_file": "API & Data Connections.md",
+      "rationale": "Security protocol ensuring data is scoped to $_SESSION['t_id'].",
+      "community": 0,
+      "norm_label": "multi-tenant data isolation",
+      "id": "tenant_isolation",
+      "community_name": "Account and Transaction APIs"
+    },
+    {
+      "label": "Database Connection & Infrastructure",
+      "file_type": "code",
+      "source_file": "global-library/database.php",
+      "rationale": "Centralized database connection using PDO, session management, and system path constants.",
+      "community": 1,
+      "norm_label": "database connection & infrastructure",
+      "id": "global_library_database",
+      "community_name": "Core Infrastructure and Authentication"
+    },
+    {
+      "label": "Core Business Logic",
+      "file_type": "code",
+      "source_file": "include/functions.php",
+      "rationale": "Contains core authentication and registration logic like checkUser, doLogin, and doRegister.",
+      "community": 1,
+      "norm_label": "core business logic",
+      "id": "include_functions",
+      "community_name": "Core Infrastructure and Authentication"
+    },
+    {
+      "label": "Login Handler",
+      "file_type": "code",
+      "source_file": "login.php",
+      "community": 1,
+      "norm_label": "login handler",
+      "id": "login",
+      "community_name": "Core Infrastructure and Authentication"
+    },
+    {
+      "label": "Registration Handler",
+      "file_type": "code",
+      "source_file": "sign-up.php",
+      "community": 1,
+      "norm_label": "registration handler",
+      "id": "sign_up",
+      "community_name": "Core Infrastructure and Authentication"
+    },
+    {
+      "label": "Main View Wrapper",
+      "file_type": "code",
+      "source_file": "include/template.php",
+      "rationale": "Assembles the UI layout including header, footer, and dynamic content.",
+      "community": 2,
+      "norm_label": "main view wrapper",
+      "id": "include_template",
+      "community_name": "Application Entry Point"
+    },
+    {
+      "label": "Application Entry Point",
+      "file_type": "code",
+      "source_file": "index.php",
+      "rationale": "Core dashboard controller and routing entry point.",
+      "community": 2,
+      "norm_label": "application entry point",
+      "id": "index",
+      "community_name": "Application Entry Point"
+    },
+    {
+      "label": "Activity Log Processor",
+      "file_type": "code",
+      "source_file": "activity-log/process.php",
+      "rationale": "Audit trail query processor for system actions.",
+      "community": 3,
+      "norm_label": "activity log processor",
+      "id": "activity_log_process",
+      "community_name": "Activity Log Processor"
+    },
+    {
+      "label": "Category API Controller",
+      "file_type": "code",
+      "source_file": "category/process.php",
+      "rationale": "CRUD processor for expense and income categories.",
+      "community": 4,
+      "norm_label": "category api controller",
+      "id": "category_process",
+      "community_name": "Category API Controller"
+    },
+    {
+      "label": "Sub-Account API Controller",
+      "file_type": "code",
+      "source_file": "sub-account/process.php",
+      "rationale": "CRUD processor linking sub-accounts to parent accounts.",
+      "community": 5,
+      "norm_label": "sub-account api controller",
+      "id": "sub_account_process",
+      "community_name": "Sub-Account API Controller"
+    },
+    {
+      "label": "User & Invitation API Controller",
+      "file_type": "code",
+      "source_file": "user/process.php",
+      "rationale": "Handles user privileges and team invitations.",
+      "community": 6,
+      "norm_label": "user & invitation api controller",
+      "id": "user_process",
+      "community_name": "User & Invitation API Controller"
+    }
+  ],
+  "links": [
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "index",
+      "target": "include_functions"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "login",
+      "target": "include_functions"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "sign_up",
+      "target": "include_functions"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "API & Data Connections.md",
+      "source": "account_process",
+      "target": "action_based_routing"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "API & Data Connections.md",
+      "source": "transaction_process",
+      "target": "action_based_routing"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "include_functions",
+      "target": "global_library_database"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "index",
+      "target": "include_template"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "API & Data Connections.md",
+      "source": "account_process",
+      "target": "tenant_isolation"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "API & Data Connections.md",
+      "source": "transaction_process",
+      "target": "tenant_isolation"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "auth_flow",
+      "label": "Authentication & Onboarding Flow",
+      "nodes": [
+        "login",
+        "sign_up",
+        "include_functions",
+        "global_library_database"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "System Flow.md"
+    },
+    {
+      "id": "api_controller_layer",
+      "label": "API Controller Layer",
+      "nodes": [
+        "account_process",
+        "transaction_process",
+        "sub_account_process",
+        "category_process",
+        "user_process",
+        "activity_log_process"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "API & Data Connections.md"
+    }
+  ],
+  "built_at_commit": "79e0fb3bee32e2ec9b2e236e5ff0d807bdc58f59"
+}

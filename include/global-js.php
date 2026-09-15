@@ -20,5 +20,17 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 
+<!-- GSAP Animation Engine -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
 <!-- Neumorphism JS -->
 <script src="<?= WEB_ROOT; ?>assets/js/neumorphism.js"></script>
+<script src="<?= WEB_ROOT; ?>assets/js/cardThemes.js?v=<?= time(); ?>"></script>
+
+<script>
+	// Guarantee modal dialogs always render on top of backdrops without screen blur
+	$(document).on('show.bs.modal', '.modal', function () {
+		$(this).appendTo('body');
+	});
+</script>
+

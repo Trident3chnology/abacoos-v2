@@ -15,6 +15,10 @@ switch ($action) {
 		add_transaction_data();
 		break;
 
+	case 'fetch_account_options':
+		fetch_account_options_data();
+		break;
+
 	case 'fetch_transaction':
 		fetch_transaction_data();
 		break;
@@ -356,37 +360,170 @@ function add_transaction_data()
 }
 
 /*
-	Fetch Transaction Data
+	Fetch Account & Sub-Account Options for Dropdowns
+*/
+function fetch_account_options_data()
+{
+	include '../global-library/database.php';
+	$tenantId = $_SESSION['t_id'] ?? 0;
+
+	header('Content-Type: application/json');
+
+	try {
+		$stmt = $conn->prepare("
+			SELECT 
+				a.a_id, 
+				a.account_name,
+				sa.sa_id,
+				sa.sub_account_name,
+				sa.sub_account_number
+			FROM account a
+			LEFT JOIN sub_account sa ON a.a_id = sa.a_id AND sa.is_deleted != '1'
+			WHERE a.t_id = :t_id AND a.is_deleted != '1'
+			ORDER BY a.account_name ASC, sa.sub_account_name ASC
+		");
+		$stmt->bindValue(':t_id', $tenantId, PDO::PARAM_INT);
+		$stmt->execute();
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		$accountsMap = [];
+		foreach ($rows as $row) {
+			$aId = $row['a_id'];
+			if (!isset($accountsMap[$aId])) {
+				$accountsMap[$aId] = [
+					'a_id' => $aId,
+					'account_name' => $row['account_name'],
+					'sub_accounts' => []
+				];
+			}
+			if (!empty($row['sa_id'])) {
+				$accountsMap[$aId]['sub_accounts'][] = [
+					'sa_id' => $row['sa_id'],
+					'sub_account_name' => $row['sub_account_name'],
+					'sub_account_number' => $row['sub_account_number']
+				];
+			}
+		}
+
+		echo json_encode(['status' => true, 'data' => array_values($accountsMap)]);
+	} catch (Exception $e) {
+		echo json_encode(['status' => false, 'message' => $e->getMessage()]);
+	}
+	exit;
+}
+
+/*
+	Fetch Transaction Data (Master Ledger with Multi-level Filters)
 */
 function fetch_transaction_data()
 {
 	include '../global-library/database.php';
-	$userId = $_SESSION['user_id'];
-	$tenantId = $_SESSION['t_id']; // single value
+	$tenantId = $_SESSION['t_id'] ?? 0;
 
-	$accountId = $_GET['a_id'] ?? null;
-	$subAccountId = $_GET['sa_id'] ?? null;
+	$accountId = $_GET['a_id'] ?? 'all';
+	$subAccountId = $_GET['sa_id'] ?? 'all';
+	$typeFilter = $_GET['type'] ?? 'all';
 
 	header('Content-Type: application/json');
 
-	if (!$accountId) {
-		echo json_encode(['error' => 'Account ID missing']);
-		exit;
+	$whereClauses = ["t.t_id = :t_id", "t.is_deleted != '1'"];
+	$params = [':t_id' => $tenantId];
+
+	if ($accountId && $accountId !== 'all') {
+		$whereClauses[] = "t.a_id = :a_id";
+		$params[':a_id'] = $accountId;
 	}
 
-	$stmt = $conn->prepare("SELECT t.tt_id, t.transaction_type, t.tt_date, t.c_id, c.category_name, t.description, t.type, t.from_account, t.to_account, t.remarks, t.amount
-							FROM transaction t
-							JOIN category c ON t.c_id = c.c_id
-							WHERE t.t_id = :t_id AND t.a_id = :a_id AND t.sa_id = :sa_id AND t.is_deleted != '1'
-							ORDER BY t.tt_date DESC");
-	$stmt->bindValue(':t_id', $tenantId, PDO::PARAM_INT);
-	$stmt->bindValue(':a_id', $accountId, PDO::PARAM_INT);
-	$stmt->bindValue(':sa_id', $subAccountId, PDO::PARAM_INT);
+	if ($subAccountId && $subAccountId !== 'all') {
+		$whereClauses[] = "t.sa_id = :sa_id";
+		$params[':sa_id'] = $subAccountId;
+	}
+
+	if ($typeFilter === '0') {
+		$whereClauses[] = "t.type = 0";
+	} elseif ($typeFilter === '1') {
+		$whereClauses[] = "t.type = 1";
+	} elseif ($typeFilter === 'transfer') {
+		$whereClauses[] = "t.transaction_type = 1";
+	}
+
+	$whereSql = implode(' AND ', $whereClauses);
+
+	$sql = "SELECT 
+				t.tt_id, 
+				t.transaction_type, 
+				t.tt_date, 
+				t.c_id, 
+				COALESCE(c.category_name, 'Transfer') AS category_name, 
+				t.description, 
+				t.type, 
+				t.from_account, 
+				t.to_account, 
+				t.remarks, 
+				t.amount,
+				a.account_name,
+				sa.sub_account_name
+			FROM transaction t
+			LEFT JOIN category c ON t.c_id = c.c_id
+			LEFT JOIN sub_account sa ON t.sa_id = sa.sa_id
+			LEFT JOIN account a ON t.a_id = a.a_id
+			WHERE $whereSql
+			ORDER BY t.tt_date ASC, t.tt_id ASC";
+
+	$stmt = $conn->prepare($sql);
+	foreach ($params as $k => $v) {
+		$stmt->bindValue($k, $v, is_numeric($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
+	}
 	$stmt->execute();
 	$transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$stmt = null;
 
-	echo json_encode($transactions);
+	// Fetch attachments for these transactions
+	$ttIds = array_column($transactions, 'tt_id');
+	$attachmentsMap = [];
+	if (!empty($ttIds)) {
+		$placeholders = implode(',', array_fill(0, count($ttIds), '?'));
+		$stmtImg = $conn->prepare("SELECT tt_id, ti_id, original_file_name, new_file_name, file_extension 
+								   FROM transaction_img 
+								   WHERE tt_id IN ($placeholders) AND is_deleted != '1' 
+								   ORDER BY ti_id ASC");
+		$stmtImg->execute($ttIds);
+		$imgs = $stmtImg->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($imgs as $img) {
+			$attachmentsMap[$img['tt_id']][] = [
+				'ti_id' => $img['ti_id'],
+				'original_name' => $img['original_file_name'],
+				'file_name' => $img['new_file_name'],
+				'url' => WEB_ROOT . 'assets/img/upload/' . $img['new_file_name'],
+				'ext' => strtolower($img['file_extension'] ?? '')
+			];
+		}
+	}
+	foreach ($transactions as &$t) {
+		$t['attachments'] = $attachmentsMap[$t['tt_id']] ?? [];
+	}
+	unset($t);
+
+	// Calculate summary stats
+	$totalInflow = 0;
+	$totalOutflow = 0;
+	foreach ($transactions as $t) {
+		$amt = floatval($t['amount']);
+		if ($t['type'] == 0) {
+			$totalInflow += $amt;
+		} else if ($t['type'] == 1) {
+			$totalOutflow += $amt;
+		}
+	}
+
+	echo json_encode([
+		'status' => true,
+		'data' => $transactions,
+		'summary' => [
+			'total_inflow' => $totalInflow,
+			'total_outflow' => $totalOutflow,
+			'net_balance' => $totalInflow - $totalOutflow
+		]
+	]);
 	exit;
 }
 

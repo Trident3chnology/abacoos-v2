@@ -1,0 +1,53 @@
+{
+  "projectId": "e571b6c9-c3c7-43b4-9c08-3742ad0f589f",
+  "projectTitle": "Abacoos Dashboard Redesign",
+  "canvas": "https://superdesign.dev/teams/63b43342-df37-4c6f-9257-4a10e5c3f40a/projects/e571b6c9-c3c7-43b4-9c08-3742ad0f589f",
+  "targets": [
+    {
+      "targetId": "dashboard",
+      "route": "/",
+      "description": "Dashboard — account card grid",
+      "baselineDraftId": "548416b2-538c-4a11-8eba-73eaa8cb912f",
+      "activeDraftId": "548416b2-538c-4a11-8eba-73eaa8cb912f",
+      "branchDescription": "Reproduction + 2 UI/UX improvement variations",
+      "variationDrafts": {
+        "modern-minimal": "32993339-702e-42cf-a00d-e2c79a4164f5",
+        "refined-polished": "cf1e526f-7747-4736-b786-f09ed4863b7c"
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "include/header.php",
+        "home/home.php",
+        "css/style.css"
+      ],
+      "fingerprints": {
+        "include/header.php": "sha256:header",
+        "home/home.php": "sha256:home",
+        "css/style.css": "sha256:style"
+      }
+    },
+    {
+      "targetId": "report",
+      "route": "/report",
+      "description": "Report — Financial Analytics and Cashflow Ledger",
+      "baselineDraftId": "68bbe659-73b4-428c-a31c-630734dea13f",
+      "activeDraftId": "25a2776a-08d4-4195-a427-f8c36d96c1fb",
+      "branchDescription": "Executive Cashflow Visual Analytics & Audit Multi-Account Breakdown",
+      "variationDrafts": {
+        "visual-cashflow": "25a2776a-08d4-4195-a427-f8c36d96c1fb",
+        "account-audit": "5bc64b64-f4f2-4d9b-8b75-d9e4512d58fc"
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/init/theme.md",
+        "include/header.php",
+        "transaction/list.php:71:155"
+      ],
+      "fingerprints": {
+        "include/header.php": "sha256:header",
+        "transaction/list.php": "sha256:transaction_list"
+      }
+    }
+  ]
+}
+

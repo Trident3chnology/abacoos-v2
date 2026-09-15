@@ -53,7 +53,7 @@ function fetch_account_data()
 		exit;
 	}
 
-	$stmt = $conn->prepare("SELECT a_id, account_name
+	$stmt = $conn->prepare("SELECT a_id, account_name, card_theme
 							FROM account
 							WHERE t_id = :t_id AND is_deleted != '1'
 							ORDER BY account_name DESC");
@@ -136,6 +136,9 @@ function add_account_data()
 	$tenantId = $_SESSION['t_id'];
 
 	$addAccountName = trim($_POST['addAccountName'] ?? '');
+	$bankLogo = trim($_POST['bankLogo'] ?? 'default');
+	$cardTheme = trim($_POST['cardTheme'] ?? 'default');
+	$combinedTheme = $bankLogo . '_' . $cardTheme;
 
 	// Get Tenant Account Limits
 	$gtal = $conn->prepare("SELECT account FROM tenant WHERE t_id = :t_id LIMIT 1");
@@ -175,10 +178,11 @@ function add_account_data()
 	}
 
 	// Insert Account Data
-	$itud = $conn->prepare("INSERT INTO account (t_id, account_name, date_added, added_by)
-										VALUES (:t_id, :account_name, :date_added, :added_by)");
+	$itud = $conn->prepare("INSERT INTO account (t_id, account_name, card_theme, date_added, added_by)
+										VALUES (:t_id, :account_name, :card_theme, :date_added, :added_by)");
 	$itud->bindParam(':t_id', $tenantId, PDO::PARAM_INT);
 	$itud->bindParam(':account_name', $addAccountName, PDO::PARAM_STR);
+	$itud->bindParam(':card_theme', $combinedTheme, PDO::PARAM_STR);
 	$itud->bindParam(':date_added', $today_date1, PDO::PARAM_STR);
 	$itud->bindParam(':added_by', $userId, PDO::PARAM_INT);
 	$itud->execute();
@@ -269,6 +273,9 @@ function edit_account_data()
 	$tenantId = $_SESSION['t_id'] ?? 0;
 
 	$editAccountName = trim($_POST['editAccountName'] ?? '');
+	$bankLogo = trim($_POST['bankLogo'] ?? 'default');
+	$cardTheme = trim($_POST['cardTheme'] ?? 'default');
+	$combinedTheme = $bankLogo . '_' . $cardTheme;
 	$a_id = ($_POST['a_id'] ?? '');
 
 	// Get Tenant Account Limits
@@ -290,7 +297,7 @@ function edit_account_data()
 	$stmt->execute([
 		':account_name' => $editAccountName,
 		':t_id' => $tenantId,
-		':a_id' => $aId
+		':a_id' => $a_id
 	]);
 	$data = $stmt->fetch(PDO::FETCH_ASSOC);
 	$stmt = null;
@@ -323,9 +330,10 @@ function edit_account_data()
 
 	//  Update Account Data
 	$uad = $conn->prepare("UPDATE account 
-							SET account_name = :account_name
+							SET account_name = :account_name, card_theme = :card_theme
 							WHERE a_id = :a_id");
 	$uad->bindParam(':account_name', $editAccountName, PDO::PARAM_STR);
+	$uad->bindParam(':card_theme', $combinedTheme, PDO::PARAM_STR);
 	$uad->bindParam(':a_id', $a_id, PDO::PARAM_INT);
 	$uad->execute();
 

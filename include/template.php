@@ -23,7 +23,7 @@ $self = WEB_ROOT . 'index.php';
 <body>
     <?php include($_SERVER["DOCUMENT_ROOT"] . '/' . WEB_ROOT . '/include/header.php'); ?>
 
-    <main>
+    <main id="main-content-view" class="page-view-wrapper">
         <?php
         if ($user_data['is_verified'] == '1'):
             require_once $content;

@@ -121,21 +121,11 @@ $(function () {
                     .then(response => response.json())
                     .then(data => {
                         if (data.status) {
-                            Swal.fire({
-                                icon: 'success', // 'success', 'error', 'warning', 'info', 'question'
-                                title: 'Deleted!',
-                                text: 'Category has been deleted.',
-                                timer: 2500,
-                                showConfirmButton: false,
-                                background: '#e0e5ec',
-                                customClass: {
-                                    popup: 'neu-popup',
-                                    title: 'neu-title',
-                                    confirmButton: 'neu-btn',
-                                    cancelButton: 'neu-btn'
-                                },
-                                buttonsStyling: false
-                            });
+                            if (typeof showLottieSuccessAlert === 'function') {
+                                showLottieSuccessAlert('Deleted!', 'Category has been deleted.');
+                            } else {
+                                Swal.fire('Deleted!', 'Category has been deleted.', 'success');
+                            }
 
                             loadCategoryTable(); // reload table
                         } else {

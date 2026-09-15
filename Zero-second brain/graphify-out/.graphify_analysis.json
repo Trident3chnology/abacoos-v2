@@ -1,0 +1,172 @@
+{
+  "communities": {
+    "0": [
+      "account_process",
+      "action_based_routing",
+      "tenant_isolation",
+      "transaction_process"
+    ],
+    "1": [
+      "global_library_database",
+      "include_functions",
+      "login",
+      "sign_up"
+    ],
+    "2": [
+      "include_template",
+      "index"
+    ],
+    "3": [
+      "activity_log_process"
+    ],
+    "4": [
+      "category_process"
+    ],
+    "5": [
+      "sub_account_process"
+    ],
+    "6": [
+      "user_process"
+    ]
+  },
+  "cohesion": {
+    "0": 0.6666666666666666,
+    "1": 0.5,
+    "2": 1.0,
+    "3": 1.0,
+    "4": 1.0,
+    "5": 1.0,
+    "6": 1.0
+  },
+  "gods": [
+    {
+      "id": "include_functions",
+      "label": "Core Business Logic",
+      "degree": 4
+    },
+    {
+      "id": "account_process",
+      "label": "Account API Controller",
+      "degree": 2
+    },
+    {
+      "id": "transaction_process",
+      "label": "Transaction API Controller",
+      "degree": 2
+    },
+    {
+      "id": "action_based_routing",
+      "label": "Action-Based Routing Pattern",
+      "degree": 2
+    },
+    {
+      "id": "tenant_isolation",
+      "label": "Multi-Tenant Data Isolation",
+      "degree": 2
+    },
+    {
+      "id": "index",
+      "label": "Application Entry Point",
+      "degree": 2
+    },
+    {
+      "id": "global_library_database",
+      "label": "Database Connection & Infrastructure",
+      "degree": 1
+    },
+    {
+      "id": "login",
+      "label": "Login Handler",
+      "degree": 1
+    },
+    {
+      "id": "sign_up",
+      "label": "Registration Handler",
+      "degree": 1
+    },
+    {
+      "id": "include_template",
+      "label": "Main View Wrapper",
+      "degree": 1
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Account API Controller",
+      "target": "Multi-Tenant Data Isolation",
+      "source_files": [
+        "account/process.php",
+        "API & Data Connections.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "implements",
+      "why": "inferred connection - not explicitly stated in source; crosses file types (code ↔ doc); connects across different repos/directories"
+    },
+    {
+      "source": "Transaction API Controller",
+      "target": "Multi-Tenant Data Isolation",
+      "source_files": [
+        "transaction/process.php",
+        "API & Data Connections.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "implements",
+      "why": "inferred connection - not explicitly stated in source; crosses file types (code ↔ doc); connects across different repos/directories"
+    },
+    {
+      "source": "Account API Controller",
+      "target": "Action-Based Routing Pattern",
+      "source_files": [
+        "account/process.php",
+        "API & Data Connections.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "implements",
+      "why": "crosses file types (code ↔ doc); connects across different repos/directories"
+    },
+    {
+      "source": "Transaction API Controller",
+      "target": "Action-Based Routing Pattern",
+      "source_files": [
+        "transaction/process.php",
+        "API & Data Connections.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "implements",
+      "why": "crosses file types (code ↔ doc); connects across different repos/directories"
+    },
+    {
+      "source": "Application Entry Point",
+      "target": "Core Business Logic",
+      "source_files": [
+        "index.php",
+        "include/functions.php"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `Core Business Logic` connect `Core Infrastructure and Authentication` to `Application Entry Point`?",
+      "why": "High betweenness centrality (0.115) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Application Entry Point` connect `Application Entry Point` to `Core Infrastructure and Authentication`?",
+      "why": "High betweenness centrality (0.051) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `Multi-Tenant Data Isolation` (e.g. with `Account API Controller` and `Transaction API Controller`) actually correct?",
+      "why": "`Multi-Tenant Data Isolation` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `Database Connection & Infrastructure`, `Login Handler`, `Registration Handler` to the rest of the system?",
+      "why": "8 weakly-connected nodes found - possible documentation gaps or missing edges."
+    }
+  ]
+}

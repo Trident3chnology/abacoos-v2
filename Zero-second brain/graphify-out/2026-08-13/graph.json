@@ -1,0 +1,271 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "auth_flow",
+        "label": "Authentication & Onboarding Flow",
+        "nodes": [
+          "login",
+          "sign_up",
+          "include_functions",
+          "global_library_database"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 0.95,
+        "source_file": "System Flow.md"
+      },
+      {
+        "id": "api_controller_layer",
+        "label": "API Controller Layer",
+        "nodes": [
+          "account_process",
+          "transaction_process",
+          "sub_account_process",
+          "category_process",
+          "user_process",
+          "activity_log_process"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "API & Data Connections.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "Account API Controller",
+      "file_type": "code",
+      "source_file": "account/process.php",
+      "rationale": "Handles CRUD operations for financial accounts with tenant isolation.",
+      "id": "account_process",
+      "community": 0,
+      "norm_label": "account api controller"
+    },
+    {
+      "label": "Transaction API Controller",
+      "file_type": "code",
+      "source_file": "transaction/process.php",
+      "rationale": "Master processor for posting transactions, updating balances, and handling transfers.",
+      "id": "transaction_process",
+      "community": 0,
+      "norm_label": "transaction api controller"
+    },
+    {
+      "label": "Action-Based Routing Pattern",
+      "file_type": "concept",
+      "source_file": "API & Data Connections.md",
+      "rationale": "Architectural pattern where localized process.php scripts act as API dispatchers.",
+      "id": "action_based_routing",
+      "community": 0,
+      "norm_label": "action-based routing pattern"
+    },
+    {
+      "label": "Multi-Tenant Data Isolation",
+      "file_type": "concept",
+      "source_file": "API & Data Connections.md",
+      "rationale": "Security protocol ensuring data is scoped to $_SESSION['t_id'].",
+      "id": "tenant_isolation",
+      "community": 0,
+      "norm_label": "multi-tenant data isolation"
+    },
+    {
+      "label": "Database Connection & Infrastructure",
+      "file_type": "code",
+      "source_file": "global-library/database.php",
+      "rationale": "Centralized database connection using PDO, session management, and system path constants.",
+      "id": "global_library_database",
+      "community": 1,
+      "norm_label": "database connection & infrastructure"
+    },
+    {
+      "label": "Core Business Logic",
+      "file_type": "code",
+      "source_file": "include/functions.php",
+      "rationale": "Contains core authentication and registration logic like checkUser, doLogin, and doRegister.",
+      "id": "include_functions",
+      "community": 1,
+      "norm_label": "core business logic"
+    },
+    {
+      "label": "Login Handler",
+      "file_type": "code",
+      "source_file": "login.php",
+      "id": "login",
+      "community": 1,
+      "norm_label": "login handler"
+    },
+    {
+      "label": "Registration Handler",
+      "file_type": "code",
+      "source_file": "sign-up.php",
+      "id": "sign_up",
+      "community": 1,
+      "norm_label": "registration handler"
+    },
+    {
+      "label": "Main View Wrapper",
+      "file_type": "code",
+      "source_file": "include/template.php",
+      "rationale": "Assembles the UI layout including header, footer, and dynamic content.",
+      "id": "include_template",
+      "community": 2,
+      "norm_label": "main view wrapper"
+    },
+    {
+      "label": "Application Entry Point",
+      "file_type": "code",
+      "source_file": "index.php",
+      "rationale": "Core dashboard controller and routing entry point.",
+      "id": "index",
+      "community": 2,
+      "norm_label": "application entry point"
+    },
+    {
+      "label": "Activity Log Processor",
+      "file_type": "code",
+      "source_file": "activity-log/process.php",
+      "rationale": "Audit trail query processor for system actions.",
+      "id": "activity_log_process",
+      "community": 3,
+      "norm_label": "activity log processor"
+    },
+    {
+      "label": "Category API Controller",
+      "file_type": "code",
+      "source_file": "category/process.php",
+      "rationale": "CRUD processor for expense and income categories.",
+      "id": "category_process",
+      "community": 4,
+      "norm_label": "category api controller"
+    },
+    {
+      "label": "Sub-Account API Controller",
+      "file_type": "code",
+      "source_file": "sub-account/process.php",
+      "rationale": "CRUD processor linking sub-accounts to parent accounts.",
+      "id": "sub_account_process",
+      "community": 5,
+      "norm_label": "sub-account api controller"
+    },
+    {
+      "label": "User & Invitation API Controller",
+      "file_type": "code",
+      "source_file": "user/process.php",
+      "rationale": "Handles user privileges and team invitations.",
+      "id": "user_process",
+      "community": 6,
+      "norm_label": "user & invitation api controller"
+    }
+  ],
+  "links": [
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "index",
+      "target": "include_functions"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "login",
+      "target": "include_functions"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "sign_up",
+      "target": "include_functions"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "API & Data Connections.md",
+      "source": "account_process",
+      "target": "action_based_routing"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "API & Data Connections.md",
+      "source": "transaction_process",
+      "target": "action_based_routing"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "include_functions",
+      "target": "global_library_database"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "System Flow.md",
+      "source": "index",
+      "target": "include_template"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "API & Data Connections.md",
+      "source": "account_process",
+      "target": "tenant_isolation"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "API & Data Connections.md",
+      "source": "transaction_process",
+      "target": "tenant_isolation"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "auth_flow",
+      "label": "Authentication & Onboarding Flow",
+      "nodes": [
+        "login",
+        "sign_up",
+        "include_functions",
+        "global_library_database"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "System Flow.md"
+    },
+    {
+      "id": "api_controller_layer",
+      "label": "API Controller Layer",
+      "nodes": [
+        "account_process",
+        "transaction_process",
+        "sub_account_process",
+        "category_process",
+        "user_process",
+        "activity_log_process"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "API & Data Connections.md"
+    }
+  ],
+  "built_at_commit": "79e0fb3bee32e2ec9b2e236e5ff0d807bdc58f59"
+}
