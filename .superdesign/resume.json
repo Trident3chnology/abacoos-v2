@@ -47,6 +47,15 @@
         "include/header.php": "sha256:header",
         "transaction/list.php": "sha256:transaction_list"
       }
+    },
+    {
+      "targetId": "login",
+      "route": "/login",
+      "description": "Auth — Abacoos Sign in Page",
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "login.php"
+      ]
     }
   ]
 }
