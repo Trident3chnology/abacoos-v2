@@ -28,9 +28,16 @@
 <script src="<?= WEB_ROOT; ?>assets/js/cardThemes.js?v=<?= time(); ?>"></script>
 
 <script>
+	// Set global WEB_ROOT for scripts and service workers
+	window.WEB_ROOT = "<?= WEB_ROOT; ?>";
+
 	// Guarantee modal dialogs always render on top of backdrops without screen blur
 	$(document).on('show.bs.modal', '.modal', function () {
 		$(this).appendTo('body');
 	});
 </script>
+
+<!-- PWA Controller (Service Worker & Install Handler) -->
+<script src="<?= WEB_ROOT; ?>assets/js/pwa.js?v=<?= time(); ?>"></script>
+
 

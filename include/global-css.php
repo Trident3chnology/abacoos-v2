@@ -4,14 +4,21 @@
 
 <link rel="canonical" href="https://abacoos.com/" />
 
-<!-- Favicon -->
-<link rel="apple-touch-icon" sizes="120x120" href="<?= WEB_ROOT; ?>assets/img/favicon/apple-touch-icon.png">
+<!-- PWA & Mobile Web App Meta -->
+<meta name="application-name" content="Abacoos">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Abacoos">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#e6e7ee">
+<meta name="msapplication-TileColor" content="#e6e7ee">
+
+<!-- Favicon & PWA Manifest -->
+<link rel="apple-touch-icon" sizes="180x180" href="<?= WEB_ROOT; ?>assets/img/favicon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="<?= WEB_ROOT; ?>assets/img/favicon/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="<?= WEB_ROOT; ?>assets/img/favicon/favicon-16x16.png">
-<link rel="manifest" href="<?= WEB_ROOT; ?>assets/img/favicon/site.webmanifest">
-<link rel="mask-icon" href="<?= WEB_ROOT; ?>assets/img/favicon/safari-pinned-tab.svg" color="#ffffff">
-<meta name="msapplication-TileColor" content="#ffffff">
-<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="<?= WEB_ROOT; ?>manifest.json">
+<link rel="mask-icon" href="<?= WEB_ROOT; ?>assets/img/favicon/safari-pinned-tab.svg" color="#2D4CC8">
 
 <!-- Fontawesome -->
 <link type="text/css" href="<?= WEB_ROOT; ?>vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">

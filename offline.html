@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Abacoos - Offline</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon/favicon-32x32.png">
+    <meta name="theme-color" content="#e6e7ee">
+    <style>
+        :root {
+            --neu-bg: #e6e7ee;
+            --neu-text: #44476A;
+            --neu-muted: #7e879b;
+            --neu-primary: #2D4CC8;
+            --neu-shadow-dark: #b8b9be;
+            --neu-shadow-light: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--neu-bg);
+            color: var(--neu-text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .offline-card {
+            background-color: var(--neu-bg);
+            border-radius: 1.5rem;
+            padding: 2.5rem 2rem;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 10px 10px 20px var(--neu-shadow-dark), -10px -10px 20px var(--neu-shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .icon-container {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background-color: var(--neu-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light);
+            color: #d9534f;
+            animation: pulse-glow 2.5s infinite ease-in-out;
+        }
+
+        .icon-container svg {
+            width: 44px;
+            height: 44px;
+            fill: currentColor;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        .badge-offline {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            background-color: var(--neu-bg);
+            color: #e0443e;
+            box-shadow: 2px 2px 5px var(--neu-shadow-dark), -2px -2px 5px var(--neu-shadow-light);
+            margin-bottom: 1.25rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--neu-text);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--neu-muted);
+            margin-bottom: 2rem;
+        }
+
+        .btn-retry {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.95rem 1.5rem;
+            border-radius: 0.85rem;
+            border: none;
+            background-color: var(--neu-bg);
+            color: var(--neu-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 5px 5px 10px var(--neu-shadow-dark), -5px -5px 10px var(--neu-shadow-light);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-retry:hover {
+            color: #1a3399;
+            box-shadow: 3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-retry:active {
+            box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+            transform: translateY(1px);
+        }
+
+        .brand-footer {
+            margin-top: 1.75rem;
+            font-size: 0.8rem;
+            color: var(--neu-muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .status-toast {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-height: 22px;
+            color: #44476A;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-card">
+        <div class="icon-container">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 2.22c3.78 0 7.26 1.4 9.94 3.73l-2.02 2.02C17.7 10.37 14.97 9.33 12 9.33s-5.7 1.04-7.92 2.64L2.06 9.95C4.74 7.62 8.22 6.22 12 6.22zM2.81 2.81L1.39 4.22l2.36 2.36C1.61 7.82.25 9.4 0 9.68l12 12 4.14-4.14 3.64 3.64 1.41-1.41L2.81 2.81z"/>
+            </svg>
+        </div>
+
+        <span class="badge-offline">No Connection</span>
+        <h1>You're Currently Offline</h1>
+        <p>
+            It looks like you've lost internet access or cannot reach the server. 
+            Cached pages are still accessible, and your session will resume automatically once you reconnect.
+        </p>
+
+        <button class="btn-retry" id="retryBtn" onclick="attemptReconnect()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            Retry Connection
+        </button>
+
+        <div class="status-toast" id="statusToast"></div>
+
+        <div class="brand-footer">
+            Abacoos Financial Workspace
+        </div>
+    </div>
+
+    <script>
+        function attemptReconnect() {
+            var toast = document.getElementById('statusToast');
+            var btn = document.getElementById('retryBtn');
+            
+            toast.textContent = "Checking connection...";
+            toast.style.color = "var(--neu-primary)";
+            btn.style.opacity = "0.7";
+            btn.disabled = true;
+
+            fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
+                .then(function() {
+                    toast.textContent = "Connection restored! Reloading...";
+                    toast.style.color = "#28a745";
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 500);
+                })
+                .catch(function() {
+                    setTimeout(function() {
+                        toast.textContent = "Still offline. Please check your network.";
+                        toast.style.color = "#d9534f";
+                        btn.style.opacity = "1";
+                        btn.disabled = false;
+                    }, 600);
+                });
+        }
+
+        // Auto reload if device comes back online
+        window.addEventListener('online', function() {
+            var toast = document.getElementById('statusToast');
+            if (toast) {
+                toast.textContent = "Online! Reconnecting...";
+                toast.style.color = "#28a745";
+            }
+            setTimeout(function() {
+                window.location.reload();
+            }, 800);
+        });
+    </script>
+</body>
+</html>
